@@ -13,7 +13,7 @@ import time
 import requests
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--url", default="http://127.0.0.1:5000/api/readings")
+parser.add_argument("--url", default="http://127.0.0.1:5001/api/readings")
 parser.add_argument("--key", default="demo-key-123")
 parser.add_argument("--interval", type=float, default=5)
 parser.add_argument("--scenario", choices=["normal", "humid", "dry"], default="normal")

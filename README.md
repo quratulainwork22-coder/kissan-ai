@@ -24,7 +24,7 @@ Interface demo (sample data): https://quratulainwork22-coder.github.io/kissan-ai
     python seed.py
     python run.py
 
-Open http://127.0.0.1:5000
+Open http://127.0.0.1:5001
 
 Demo accounts (created by seed.py):
 - Farmer: farmer@kissan.local / farmer123
