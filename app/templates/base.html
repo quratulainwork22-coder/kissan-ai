@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Kissan AI{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="{{ url_for('main.index') }}">Kissan AI</a>
+  <nav>
+    {% if current_user.is_authenticated %}
+      {% if current_user.role in ['adviser', 'admin'] %}
+        <a href="{{ url_for('main.adviser') }}">Adviser panel</a>
+      {% else %}
+        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('main.new_case') }}">New case</a>
+      {% endif %}
+      <a href="{{ url_for('main.logout') }}">Logout ({{ current_user.name }})</a>
+    {% else %}
+      <a href="{{ url_for('main.login') }}">Login</a>
+      <a href="{{ url_for('main.register') }}">Register</a>
+    {% endif %}
+  </nav>
+</header>
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">Kissan AI - Final Year Project prototype, MTB College Sadiqabad</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

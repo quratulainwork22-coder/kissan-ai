@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Case #{{ case.id }} <span class="badge">{{ case.status }}</span></h1>
+<p class="muted">{{ case.farm.name }} · {{ case.created_at.strftime('%d %b %Y %H:%M') }}</p>
+
+<div class="grid">
+  <section class="card">
+    <img class="leaf" src="{{ url_for('static', filename='uploads/' + case.image_path) }}" alt="Uploaded leaf">
+    <p><strong>Symptoms:</strong> {{ case.symptoms or '-' }}</p>
+  </section>
+  <section class="card">
+    <h2>AI screening result</h2>
+    <p class="result">{{ case.predicted_label|label }}</p>
+    {% if case.confidence %}<p>Confidence: {{ '%.0f'|format(case.confidence * 100) }}%</p>{% endif %}
+    <p class="muted">This is a screening suggestion, not a final diagnosis.</p>
+    {% if case.adviser_label %}
+      <h2>Adviser review</h2>
+      <p class="result">{{ case.adviser_label|label }}</p>
+      <p>{{ case.adviser_note }}</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <h2>Guidance</h2>
+  {% if guidance %}
+    <h3>{{ guidance.title }}</h3>
+    <p class="prewrap">{{ guidance.content }}</p>
+  {% else %}
+    <p>Guidance will appear here after an agriculture adviser approves it.</p>
+  {% endif %}
+</section>
+
+{% if current_user.role in ['adviser', 'admin'] %}
+<section class="card">
+  <h2>Review this case</h2>
+  <form method="post" action="{{ url_for('main.review_case', case_id=case.id) }}">
+    <label>Confirmed condition
+      <select name="adviser_label">
+        {% for l in review_labels %}
+        <option value="{{ l }}" {% if l == (case.adviser_label or case.predicted_label) %}selected{% endif %}>{{ l|label }}</option>
+        {% endfor %}
+      </select></label>
+    <label>Note to farmer <textarea name="adviser_note" rows="3">{{ case.adviser_note or '' }}</textarea></label>
+    <label>Status
+      <select name="status"><option>Reviewed</option><option>Closed</option></select></label>
+    <button class="btn">Save review</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Follow-ups</h2>
+  {% for f in case.followups %}
+  <div class="followup">
+    <small>{{ f.created_at.strftime('%d %b %Y') }}</small>
+    <p>{{ f.note }}</p>
+    {% if f.image_path %}<img class="thumb" src="{{ url_for('static', filename='uploads/' + f.image_path) }}" alt="Follow-up photo">{% endif %}
+  </div>
+  {% else %}<p>No follow-ups yet.</p>{% endfor %}
+
+  {% if current_user.id == case.farm.user_id %}
+  <form method="post" action="{{ url_for('main.add_followup', case_id=case.id) }}" enctype="multipart/form-data">
+    <label>What action did you take? <textarea name="note" rows="2" required></textarea></label>
+    <label>New photo (optional) <input type="file" name="image" accept="image/png, image/jpeg"></label>
+    <button class="btn">Add follow-up</button>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

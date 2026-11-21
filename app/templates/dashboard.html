@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome, {{ current_user.name }}</h1>
+
+{% if alerts %}
+<section class="card warn">
+  <h2>Active alerts</h2>
+  {% for a in alerts %}
+  <div class="alert-row">
+    <div><strong>{{ a.farm.name }}:</strong> {{ a.message }}<br>
+      <small>{{ a.created_at.strftime('%d %b %Y %H:%M') }}</small></div>
+    <form method="post" action="{{ url_for('main.ack_alert', alert_id=a.id) }}">
+      <button class="btn small">Acknowledge</button>
+    </form>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>My farms</h2>
+  {% if farms %}
+  <table>
+    <tr><th>Name</th><th>Location</th><th>Crop</th><th></th></tr>
+    {% for f in farms %}
+    <tr><td>{{ f.name }}</td><td>{{ f.location }}</td><td>{{ f.crop }}</td>
+        <td><a href="{{ url_for('main.farm_detail', farm_id=f.id) }}">Sensors</a></td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p>No farms yet. Add your first farm below.</p>{% endif %}
+  <form method="post" action="{{ url_for('main.new_farm') }}" class="inline-form">
+    <input name="name" placeholder="Farm name" required>
+    <input name="location" placeholder="Location (e.g. Sadiqabad)">
+    <input name="crop" value="Cotton">
+    <button class="btn">Add farm</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Recent cases</h2>
+  <p><a class="btn" href="{{ url_for('main.new_case') }}">Upload leaf photo</a></p>
+  {% if cases %}
+  <table>
+    <tr><th>Date</th><th>Farm</th><th>Result</th><th>Status</th><th></th></tr>
+    {% for c in cases %}
+    <tr><td>{{ c.created_at.strftime('%d %b %Y') }}</td><td>{{ c.farm.name }}</td>
+        <td>{{ (c.adviser_label or c.predicted_label)|label }}</td>
+        <td><span class="badge">{{ c.status }}</span></td>
+        <td><a href="{{ url_for('main.case_detail', case_id=c.id) }}">View</a></td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p>No cases yet.</p>{% endif %}
+</section>
+{% endblock %}

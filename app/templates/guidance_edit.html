@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1>Edit guidance: {{ g.disease|label }}</h1>
+  <p class="muted">Write only from official Punjab Agriculture Department advisories. Farmers see this only after approval.</p>
+  <form method="post">
+    <label>Title <input name="title" value="{{ g.title }}" required></label>
+    <label>Content <textarea name="content" rows="10" required>{{ g.content }}</textarea></label>
+    <label class="check"><input type="checkbox" name="approved" {% if g.approved %}checked{% endif %}> Approved for farmers</label>
+    <button class="btn">Save</button>
+  </form>
+</section>
+{% endblock %}

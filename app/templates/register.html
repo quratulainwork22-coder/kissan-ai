@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Register - Kissan AI{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Farmer registration</h1>
+  <form method="post">
+    <label>Full name <input name="name" required></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Password <input type="password" name="password" minlength="6" required></label>
+    <button class="btn">Create account</button>
+  </form>
+</section>
+{% endblock %}

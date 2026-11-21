@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card narrow">
+  <h1>New crop case</h1>
+  <form method="post" enctype="multipart/form-data">
+    <label>Farm
+      <select name="farm_id">
+        {% for f in farms %}<option value="{{ f.id }}">{{ f.name }} ({{ f.crop }})</option>{% endfor %}
+      </select>
+    </label>
+    <label>Leaf photo (JPG/PNG, max 5 MB)
+      <input type="file" name="image" accept="image/png, image/jpeg" required></label>
+    <label>Symptoms you noticed
+      <textarea name="symptoms" rows="3" placeholder="e.g. leaves curling upward, thick veins"></textarea></label>
+    <button class="btn">Check leaf</button>
+  </form>
+</section>
+{% endblock %}

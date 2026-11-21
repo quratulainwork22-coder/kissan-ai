@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kissan AI - Interface Demo</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, Arial, sans-serif; background: #f4f7f2; color: #1f2a1f; }
+.nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #2e6b30; color: #fff; }
+.nav b { font-size: 20px; }
+.banner { background: #fff8e6; border-bottom: 1px solid #e0b44c; padding: 10px 24px; font-size: 14px; }
+.container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+.card { background: #fff; border: 1px solid #dde5d8; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+.warn { border-color: #e0b44c; background: #fff8e6; }
+.stats { display: flex; gap: 16px; margin-bottom: 16px; }
+.stats div { flex: 1; background: #f4f7f2; padding: 12px; border-radius: 8px; text-align: center; }
+.stats span { display: block; font-size: 24px; font-weight: bold; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.leaf { height: 180px; border-radius: 8px; background: #cfe3c4; display: flex; align-items: center; justify-content: center; color: #2e6b30; }
+.result { font-size: 22px; font-weight: bold; color: #2e6b30; margin: 4px 0; }
+.muted { color: #6b776a; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eef2eb; }
+.badge { background: #e8eee5; padding: 2px 8px; border-radius: 10px; font-size: 13px; }
+.btn { background: #2e6b30; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; }
+.footer { text-align: center; color: #6b776a; padding: 24px; font-size: 13px; }
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } .stats { flex-direction: column; } }
+</style>
+</head>
+<body>
+<div class="nav"><b>Kissan AI</b><span>Dashboard · New case · Adviser panel</span></div>
+<div class="banner">Interface demo with sample data. The working system (Flask, database, AI model and ESP32) runs locally - see the GitHub repository.</div>
+
+<div class="container">
+  <h1>Welcome, Demo Farmer</h1>
+
+  <div class="card warn">
+    <h2>Active alert</h2>
+    <p><b>Demo Farm, Sadiqabad:</b> Hot and humid conditions for several readings: higher whitefly / leaf curl risk. Please scout your field and upload a leaf photo if you see symptoms.</p>
+    <button class="btn">Acknowledge</button>
+  </div>
+
+  <div class="card">
+    <h2>Field sensor readings (ESP32)</h2>
+    <div class="stats">
+      <div><span>32.4 °C</span>Temperature</div>
+      <div><span>86 %</span>Humidity</div>
+      <div><span>48 %</span>Soil moisture</div>
+    </div>
+    <canvas id="chart" height="110"></canvas>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="leaf">Uploaded cotton leaf photo</div>
+      <p><b>Symptoms:</b> leaves curling upward, thick veins</p>
+    </div>
+    <div class="card">
+      <h2>AI screening result</h2>
+      <p class="result">Cotton Leaf Curl Virus</p>
+      <p>Confidence: 91%</p>
+      <p class="muted">Screening suggestion, not a final diagnosis.</p>
+      <h2>Adviser review</h2>
+      <p class="result">Confirmed</p>
+      <p>Guidance shown only after adviser approval.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Adviser panel - open cases</h2>
+    <table>
+      <tr><th>#</th><th>Farmer</th><th>AI result</th><th>Status</th></tr>
+      <tr><td>14</td><td>Demo Farmer</td><td>Cotton Leaf Curl Virus</td><td><span class="badge">Reviewed</span></td></tr>
+      <tr><td>13</td><td>Demo Farmer 2</td><td>Uncertain - needs review</td><td><span class="badge">Submitted</span></td></tr>
+      <tr><td>12</td><td>Demo Farmer 3</td><td>Bacterial Blight</td><td><span class="badge">Submitted</span></td></tr>
+    </table>
+  </div>
+</div>
+<div class="footer">Kissan AI - Final Year Project, MTB College Sadiqabad · Quratul Ain Tahir</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+const times = ["10:00","10:10","10:20","10:30","10:40","10:50","11:00","11:10"];
+new Chart(document.getElementById("chart"), {
+  type: "line",
+  data: { labels: times, datasets: [
+    { label: "Temperature (°C)", data: [29.8,30.5,31.0,31.6,32.0,32.2,32.3,32.4] },
+    { label: "Humidity (%)", data: [62,68,74,79,82,84,85,86] },
+    { label: "Soil moisture (%)", data: [50,50,49,49,48,48,48,48] }
+  ]},
+  options: { animation: false }
+});
+</script>
+</body>
+</html>

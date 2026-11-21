@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ farm.name }}</h1>
+<p class="muted">{{ farm.location }} · {{ farm.crop }}</p>
+
+<section class="card">
+  <h2>Field sensor readings</h2>
+  {% if latest %}
+  <div class="stats">
+    <div><span>{{ '%.1f'|format(latest.temperature) }} °C</span>Temperature</div>
+    <div><span>{{ '%.0f'|format(latest.humidity) }} %</span>Humidity</div>
+    <div><span>{{ '%.0f'|format(latest.soil_moisture) if latest.soil_moisture is not none else '-' }} %</span>Soil moisture</div>
+  </div>
+  {% else %}
+  <p>No readings yet. Start the ESP32 or run <code>python iot/simulator.py</code>.</p>
+  {% endif %}
+  <canvas id="chart" height="110"></canvas>
+</section>
+
+<section class="card">
+  <h2>Alerts</h2>
+  {% for a in alerts %}
+  <div class="alert-row">
+    <div>{{ a.message }}<br><small>{{ a.created_at.strftime('%d %b %Y %H:%M') }}
+      {% if a.acknowledged %}· acknowledged{% endif %}</small></div>
+    {% if not a.acknowledged %}
+    <form method="post" action="{{ url_for('main.ack_alert', alert_id=a.id) }}">
+      <button class="btn small">Acknowledge</button></form>
+    {% endif %}
+  </div>
+  {% else %}<p>No alerts.</p>{% endfor %}
+</section>
+
+{% if current_user.id == farm.user_id %}
+<section class="card">
+  <h2>Device API key</h2>
+  <p>Put this key in the ESP32 code or the simulator:</p>
+  <code>{{ farm.api_key }}</code>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+const chart = new Chart(document.getElementById('chart'), {
+  type: 'line',
+  data: { labels: [], datasets: [
+    { label: 'Temperature (°C)', data: [] },
+    { label: 'Humidity (%)', data: [] },
+    { label: 'Soil moisture (%)', data: [] }
+  ]},
+  options: { animation: false }
+});
+async function loadReadings() {
+  const res = await fetch("{{ url_for('main.api_farm_readings', farm_id=farm.id) }}");
+  const rows = await res.json();
+  chart.data.labels = rows.map(r => r.time);
+  chart.data.datasets[0].data = rows.map(r => r.temperature);
+  chart.data.datasets[1].data = rows.map(r => r.humidity);
+  chart.data.datasets[2].data = rows.map(r => r.soil_moisture);
+  chart.update();
+}
+loadReadings();
+setInterval(loadReadings, 10000);
+</script>
+{% endblock %}
